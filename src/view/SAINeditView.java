@@ -5,36 +5,26 @@
 
 package view;
 
-/////////////////////////////// UPDATE ALL TEXT FIELDS AND COMBO BOXES TO LABELS
-/////////////////////////////// CREATE DIALOGS IF THE USER WISHES TO EDIT THE STUDENT
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 import controller.SAINeditViewController;
-import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.shape.Line;
 import javafx.stage.Stage;
 
 public class SAINeditView
 {
-	private Label					lblDirections;
-									
-	private Label					lblNameSearch;
-	private TextField				txtFldNameSearch;
-	private Button					btnNameSearch;
-	private HBox					hboxSearch;
-									
-	private Line					line1;
-									
-	private GridPane				infoGridPane;
-									
 	private Label					lblName;				// Name label
 	private Label					lblNameResult;			// Name text field
 	private HBox					hboxName;				// Name hbox
@@ -71,178 +61,163 @@ public class SAINeditView
 	private ComboBox				cmboBoxCoursesTaking;	// Courses taking combo box
 	private HBox					hboxCoursesTaking;		// Courses taking hbox
 	private Button					btnUpdateCoursesTaking;
-									
+	
+	private GridPane				gridPane;				// GridPane for student info
+	
 	private Button					btnSave;				// Save button
 	private Button					btnCancel;				// Cancel button
 	private HBox					hboxButtons;			// Buttons hbox
-									
+	
 	private VBox					pane;					// Parent pane
 	private Stage					stage;					// Stage
-									
+	
 	private String					name;					// Name
 	private String					userName;				// User name
 	private String					password;				// Password
 	private String					address;				// Address
 	private String					gpa;					// GPA
-									
+	
+	private Alert					alert;
+	private TextInputDialog			textInputDialog;
+	
 	private SAINeditViewController	controller;				// Controller
-									
+	
 	private SAINeditViewListener	sainEditViewListener;	// Listener
-									
+	
 	// Constructor
-	public SAINeditView(Stage stage)
+	public SAINeditView(Stage stage, SAINeditViewController controller)
 	{
 		// Set stage to argument stage
 		this.stage = stage;
 		
+		this.controller = controller;
+		
 		// Set title of stage
 		stage.setTitle("SAIN Editor");
-		
-		lblDirections = new Label("Enter the name of the student that you wish to view");
-		lblDirections.setStyle("-fx-font-weight: bold");
-		
-		lblNameSearch = new Label("Name:");
-		lblNameSearch.setStyle("-fx-font-weight: bold");
-		txtFldNameSearch = new TextField("name");
-		
-		btnNameSearch = new Button("Search");
-		btnNameSearch.setOnAction(e ->
-		{
-			name = txtFldNameSearch.getText();
-			
-			SAINeditViewEvent ev = new SAINeditViewEvent(this, name);
-			if (sainEditViewListener != null)
-			{
-				sainEditViewListener.nameSearchClicked();
-			}
-			
-			// Instantiate new runnable
-			Platform.runLater(new Runnable()
-			{
-				// Override the run method
-				@Override
-				public void run()
-				{
-					// Insert methods to updates text fields
-					lblNameResult.setText(controller.getModel().getName());
-					lblUserNameResult.setText(controller.getModel().getUserName());
-					lblPasswordResult.setText(controller.getModel().getPassword());
-					// lblGPAResult.setText(controller.getModel().getGpa());
-					// comboBoxCoursesTook.setText("");
-					// comboBoxCoursesOther.setText("");
-					// comboBoxCoursesFailed.setText("");
-					// comboBoxCoursesTaking.setText("");
-					
-				}
-			});
-		});
-		
-		line1 = new Line(100, 40, 730, 40);
-		
-		infoGridPane = new GridPane();
-		
-		hboxSearch = new HBox(20);
-		hboxSearch.getChildren().addAll(lblNameSearch, txtFldNameSearch, btnNameSearch);
 		
 		// Initialize name label
 		lblName = new Label("Name: ");
 		lblName.setStyle("-fx-font-weight: bold");
-		// Translate label 5 pixels down to match the text field
-		// lblName.setTranslateY(5);
 		// Initialize name text field
-		lblNameResult = new Label("name");
+		lblNameResult = new Label(controller.getModel().getName());
 		lblNameResult.setStyle("-fx-font-posture: italic");
-		// lblName.setFont(Font.font("Verdana", FontPosture.ITALIC, 9));
-		// // Set width of name text field
-		// txtFldName.setMaxWidth(150);
 		btnUpdateName = new Button("Update Name");
 		btnUpdateName.setOnAction(e ->
 		{
+			if (sainEditViewListener != null)
+			{
+				String temp = sainEditViewListener.updateNameClicked();
+				if (!temp.equals(null))
+				{
+					lblNameResult.setText(temp);
+				}
+				
+			}
 		});
-		// Initialize name hbox
-		hboxName = new HBox(20);
-		// Add label and text field to the hbox
-		hboxName.getChildren().addAll(lblName, lblNameResult, btnUpdateName);
 		
 		// Initialize major label
 		lblMajor = new Label("Major: ");
 		lblMajor.setStyle("-fx-font-weight: bold");
-		// Translate label 5 pixels down to match the text field
-		// lblMajor.setTranslateY(5);
-		// cmboBoxMajor = new ComboBox(majorBag.getMajorStringList());
 		// Initialize major combo box
-		lblMajorResult = new Label("major");
+		lblMajorResult = new Label(controller.getModel().getMajor().getTitle());
 		lblMajorResult.setStyle("-fx-font-posture: italic");
 		// // Set width of major combo box
 		// cmboBoxMajor.setMaxWidth(150);
 		btnUpdateMajor = new Button("Update Major");
 		btnUpdateMajor.setOnAction(e ->
 		{
+			
+			List<String> choices = new ArrayList<>();
+			choices.add("a");
+			choices.add("b");
+			choices.add("c");
+			
+			//////////////////////////////////////////////////
+			for (int i = 0; i < controller.getMajorBag().getMajorList().size(); i++)
+			{
+				// choices.add(getMajorBag);
+			}
+			
+			//////////////////////////////////////////////////
+			ChoiceDialog<String> dialog = new ChoiceDialog<>("b", choices);
+			dialog.setTitle("Choice Dialog");
+			dialog.setHeaderText("Look, a Choice Dialog");
+			dialog.setContentText("Choose your letter:");
+			
+			// Traditional way to get the response value.
+			Optional<String> result = dialog.showAndWait();
+			if (result.isPresent())
+			{
+				System.out.println("Your choice: " + result.get());
+			}
+			
+			// The Java 8 way to get the response value (with lambda expression).
+			result.ifPresent(letter -> System.out.println("Your choice: " + letter));
+			
 		});
-		// Initialize major hbox
-		hboxMajor = new HBox();
-		// Add label and combo box to major hbox
-		hboxMajor.getChildren().addAll(lblMajor, lblMajorResult, btnUpdateMajor);
 		
 		// Initialize username label
 		lblUserName = new Label("User Name: ");
 		lblUserName.setStyle("-fx-font-weight: bold");
-		// Translate label 5 pixels down to match the text field
-		// lblUserName.setTranslateY(5);
 		// Initialize username text field
-		lblUserNameResult = new Label("user name");
+		lblUserNameResult = new Label(controller.getModel().getUserName());
 		lblUserNameResult.setStyle("-fx-font-posture: italic");
-		// // Set width of username text field
-		// txtFldUserName.setMaxWidth(150);
 		btnUpdateUserName = new Button("Update User Name");
 		btnUpdateUserName.setOnAction(e ->
 		{
+			if (sainEditViewListener != null)
+			{
+				String temp = sainEditViewListener.updateUserNameClicked();
+				if (!temp.equals(null))
+				{
+					lblUserNameResult.setText(temp);
+				}
+			}
 		});
-		// Initialize username hbox
-		hboxUserName = new HBox(20);
-		// Add label and text field to username hbox
-		hboxUserName.getChildren().addAll(lblUserName, lblUserNameResult, btnUpdateUserName);
 		
 		// Initialize password label
 		lblPassword = new Label("Password: ");
 		lblPassword.setStyle("-fx-font-weight: bold");
-		// Translate label 5 pixels down to match the text field
-		// lblPassword.setTranslateY(5);
 		// Initialize password text field
-		lblPasswordResult = new Label("password");
+		lblPasswordResult = new Label(controller.getModel().getPassword());
 		lblPasswordResult.setStyle("-fx-font-posture: italic");
-		// // Set width of password text field
-		// txtFldPassword.setMaxWidth(150);
 		// Initialize password hbox
 		hboxPassword = new HBox(20);
 		btnUpdatePassword = new Button("Update Password");
 		btnUpdatePassword.setOnAction(e ->
 		{
+			if (sainEditViewListener != null)
+			{
+				String temp = sainEditViewListener.updatePasswordClicked();
+				if (!temp.equals(null))
+				{
+					lblPasswordResult.setText(temp);
+				}
+			}
 		});
-		// Add label and password and text field to password hbox
-		hboxPassword.getChildren().addAll(lblPassword, lblPasswordResult, btnUpdatePassword);
 		
 		// Initialize GPA label
 		lblGPA = new Label("GPA: ");
 		lblGPA.setStyle("-fx-font-weight: bold");
-		// Translate label 5 pixels down to match the text field
-		// lblGPA.setTranslateY(5);
 		// Initialize GPA text field
-		lblGPAResult = new Label("GPA");
+		lblGPAResult = new Label(Double.toString(controller.getModel().getGpa()));
 		lblGPAResult.setStyle("-fx-font-posture: italic");
-		// // Set width of GPA text field
-		// txtFldGPA.setMaxWidth(150);
 		btnUpdateGPA = new Button("Update GPA");
-		// Initialize GPA hbox
-		hboxGPA = new HBox(20);
-		// Add label and text field to GPA hbox
-		hboxGPA.getChildren().addAll(lblGPA, lblGPAResult, btnUpdateGPA);
+		btnUpdateGPA.setOnAction(e ->
+		{
+			if (sainEditViewListener != null)
+			{
+				double temp = sainEditViewListener.updateGpaClicked();
+				if (temp == 0)
+				{
+					lblGPAResult.setText(Double.toString(temp));
+				}
+			}
+		});
 		
 		// Initialize courses took label
 		lblCoursesTook = new Label("Courses Taken: ");
 		lblCoursesTook.setStyle("-fx-font-weight: bold");
-		// Translate label 5 pixels down to match the text field
-		// lblCoursesTook.setTranslateY(5);
 		// Initialize courses took combo box
 		cmboBoxCoursesTook = new ComboBox();
 		// // Set width of courses took combo box
@@ -250,86 +225,82 @@ public class SAINeditView
 		btnUpdateCoursesTook = new Button("Update Courses Took");
 		btnUpdateCoursesTook.setOnAction(e ->
 		{
+			// Check boxes next to each course indicating status (notTake, taken, took)
 		});
-		// Initialize courses took hbox
-		hboxCoursesTook = new HBox(20);
-		// Add label and combo box to courses took hbox
-		hboxCoursesTook.getChildren().addAll(lblCoursesTook, cmboBoxCoursesTook, btnUpdateCoursesTook);
 		
 		// Initialize other courses label
 		lblCoursesOther = new Label("Other courses: ");
 		lblCoursesOther.setStyle("-fx-font-weight: bold");
-		// Translate label 5 pixels down to match the text field
-		// lblCoursesOther.setTranslateY(5);
 		// Initialize other courses combo box
 		cmboBoxCoursesOther = new ComboBox();
-		// // Set width of other courses combo box
-		// cmboBoxCoursesOther.setMaxWidth(150);
-		btnUpdateCoursesOther = new Button("Update courses Other");
-		// Initialize other courses hbox
-		hboxCoursesOther = new HBox(20);
-		// Add label and combo box to other courses hbox
-		hboxCoursesOther.getChildren().addAll(lblCoursesOther, cmboBoxCoursesOther, btnUpdateCoursesOther);
+		btnUpdateCoursesOther = new Button("Update Courses Other");
+		btnUpdateCoursesOther.setOnAction(e ->
+		{
+			// Check boxes next to each course indicating status (notTake, taken, took)
+		});
 		
 		// Initialize courses failed label
 		lblCoursesFailed = new Label("Failed Courses: ");
 		lblCoursesFailed.setStyle("-fx-font-weight: bold");
-		// Translate label 5 pixels down to match the text field
-		// lblCoursesFailed.setTranslateY(5);
 		// Initialize courses failed combo box
 		cmboBoxCoursesFailed = new ComboBox();
-		// // Set width of courses failed combo box
-		// cmboBoxCoursesFailed.setMaxWidth(150);
 		btnUpdateCoursesFailed = new Button("Update Courses Failed");
 		btnUpdateCoursesFailed.setOnAction(e ->
 		{
+			// Check boxes next to each course indicating status (notTake, taken, took)
 		});
-		// Initialize courses failed hbox
-		hboxCoursesFailed = new HBox(20);
-		// Add label and combo box to courses failed hbox
-		hboxCoursesFailed.getChildren().addAll(lblCoursesFailed, cmboBoxCoursesFailed, btnUpdateCoursesFailed);
 		
 		// Initialize courses currently taking label
 		lblCoursesTaking = new Label("Courses Currently Taking: ");
 		lblCoursesTaking.setStyle("-fx-font-weight: bold");
-		// Translate label 5 pixels down to match the text field
-		// lblCoursesTaking.setTranslateY(5);
 		// Initialize courses taking combo box
 		cmboBoxCoursesTaking = new ComboBox();
-		// // Set width of courses taking combo box
-		// cmboBoxCoursesTaking.setMaxWidth(150);
 		btnUpdateCoursesTaking = new Button("Update Courses Taking");
 		btnUpdateCoursesTaking.setOnAction(e ->
 		{
+			// Check boxes next to each course indicating status (notTake, taken, took)
 		});
-		// Initialize courses tkaing hbox
-		hboxCoursesTaking = new HBox(20);
-		// Add label and combo box to courses taking hbox
-		hboxCoursesTaking.getChildren().addAll(lblCoursesTaking, cmboBoxCoursesTaking, btnUpdateCoursesTaking);
+		
+		gridPane = new GridPane();
+		gridPane.add(lblName, 0, 0, 1, 1);
+		gridPane.add(lblNameResult, 1, 0, 1, 1);
+		gridPane.add(btnUpdateName, 2, 0, 1, 1);
+		gridPane.add(lblMajor, 0, 1, 1, 1);
+		gridPane.add(lblMajorResult, 1, 1, 1, 1);
+		gridPane.add(btnUpdateMajor, 2, 1, 1, 1);
+		gridPane.add(lblUserName, 0, 2, 1, 1);
+		gridPane.add(lblUserNameResult, 1, 2, 1, 1);
+		gridPane.add(btnUpdateUserName, 2, 2, 1, 1);
+		gridPane.add(lblPassword, 0, 3, 1, 1);
+		gridPane.add(lblPasswordResult, 1, 3, 1, 1);
+		gridPane.add(btnUpdatePassword, 2, 3, 1, 1);
+		gridPane.add(lblGPA, 0, 4, 1, 1);
+		gridPane.add(lblGPAResult, 1, 4, 1, 1);
+		gridPane.add(btnUpdateGPA, 2, 4, 1, 1);
+		gridPane.add(lblCoursesTook, 0, 5, 1, 1);
+		gridPane.add(cmboBoxCoursesTook, 1, 5, 1, 1);
+		gridPane.add(btnUpdateCoursesTook, 2, 5, 1, 1);
+		gridPane.add(lblCoursesOther, 0, 6, 1, 1);
+		gridPane.add(cmboBoxCoursesOther, 1, 6, 1, 1);
+		gridPane.add(btnUpdateCoursesOther, 2, 6, 1, 1);
+		gridPane.add(lblCoursesFailed, 0, 7, 1, 1);
+		gridPane.add(cmboBoxCoursesFailed, 1, 7, 1, 1);
+		gridPane.add(btnUpdateCoursesFailed, 2, 7, 1, 1);
+		gridPane.add(lblCoursesTaking, 0, 8, 1, 1);
+		gridPane.add(cmboBoxCoursesTaking, 1, 8, 1, 1);
+		gridPane.add(btnUpdateCoursesTaking, 2, 8, 1, 1);
+		
+		gridPane.setVgap(10);
+		gridPane.setHgap(10);
 		
 		// Initialize update button
 		btnSave = new Button("Save");
 		// Update button event handler
 		btnSave.setOnAction(e ->
 		{
-			// // Get name from text field
-			// name = txtFldName.getText();
-			// // Get major from combo box
-			// // major = txtFldMajor.getText();
-			// // Get username from text field
-			// userName = txtFldUserName.getText();
-			// // Get password from text field
-			// password = txtFldPassword.getText();
-			// // Get GPA from text field
-			// gpa = txtFldGPA.getText();
-			// Get courses took form combo box
-			// Get courses other form combo box
-			// Get courses failed form combo box
-			// Get courses taking form combo box
-			
-			// SAINediViewEvent ev = new SAINeditViewEvent(this, name, userName,
-			// password, gpa);
-			
+			// Save all info to the student model, then close the window
+			stage.close();
+			// Go back to search pane
 		});
 		
 		// Initialize cancel button
@@ -339,7 +310,6 @@ public class SAINeditView
 		{
 			stage.close();
 			// Then go back to search pane
-			
 		});
 		
 		// Initialize hbox for button
@@ -352,13 +322,31 @@ public class SAINeditView
 		// Set padding for parent pane
 		pane.setPadding(new Insets(10, 10, 10, 10));
 		// Add hboxes to the parent pane
-		pane.getChildren().addAll(lblDirections, hboxSearch, line1, hboxName, hboxUserName, hboxPassword, hboxGPA,
-				hboxCoursesTook, hboxCoursesOther, hboxCoursesFailed, hboxCoursesTaking, hboxButtons);
-				
+		// pane.getChildren().addAll(hboxName, hboxUserName, hboxPassword, hboxGPA, hboxCoursesTook, hboxCoursesOther,
+		// hboxCoursesFailed, hboxCoursesTaking, hboxButtons);
+		pane.getChildren().addAll(gridPane, hboxButtons);
+		
+		// // Insert methods to updates text fields
+		// lblNameResult.setText(controller.getModel().getName());
+		// lblUserNameResult.setText(controller.getModel().getUserName());
+		// lblPasswordResult.setText(controller.getModel().getPassword());
+		// lblGPAResult.setText(Double.toString(controller.getModel().getGpa()));
+		
+		// FIX THESE COMBO BOXES LATER
+		// comboBoxCoursesTook.setText("");
+		// comboBoxCoursesOther.setText("");
+		// comboBoxCoursesFailed.setText("");
+		// comboBoxCoursesTaking.setText("");
+		
 		// Set scene
 		stage.setScene(new Scene(pane, 750, 500));
 		// Show stage
 		stage.show();
+	}
+	
+	public void setController(SAINeditViewController controller)
+	{
+		this.controller = controller;
 	}
 	
 	// Set listener method

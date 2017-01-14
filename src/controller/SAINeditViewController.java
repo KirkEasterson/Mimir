@@ -12,6 +12,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.TextInputDialog;
+import javafx.stage.Stage;
 import model.CourseBag;
 import model.Major;
 import model.MajorBag;
@@ -26,25 +27,26 @@ public class SAINeditViewController
 	private TextInputDialog	editingDialog;
 	private ChoiceDialog	choiceDialog;
 	private Alert			alert;
-							
+	
 	private Student			studentModel;
 	private StudentBag		studentBag;
 	private MajorBag		majorBag;
 	private CourseBag		courseBag;
-							
+	
 	private String			name;			// Name of student
 	private Major			major;			// Major of student
 	private String			userName;		// Username for student
 	private String			password;		// Password for student
 	private String			gpa;			// GPA for student
-							
-	public SAINeditViewController(SAINeditView window, StudentBag studentBag, MajorBag majorBag, CourseBag courseBag)
+	
+	public SAINeditViewController(Stage stage, Student studentModel, MajorBag majorBag, CourseBag courseBag)
 	{
 		// Set studentModel to argument studentModel
 		this.studentModel = studentModel;
-		this.studentBag = studentBag;
 		this.majorBag = majorBag;
 		this.courseBag = courseBag;
+		
+		SAINeditView window = new SAINeditView(stage, this);
 		
 		// Set listener method
 		window.setSAINeditViewListener(new SAINeditViewListener()
@@ -89,39 +91,41 @@ public class SAINeditViewController
 			// }
 			// }
 			
-			@Override
-			public void nameSearchClicked()
-			{
-				studentModel = null;
-				
-				if (studentBag.isStudentValid(name))
-				{
-					// Get valid student
-					studentModel = studentBag.getValidStudent();
-					
-				} else
-				{
-					alert = new Alert(AlertType.ERROR);
-					alert.setTitle("Error");
-					alert.setHeaderText("Entered name is invalid");
-					alert.setContentText("Please enter a valid name");
-					alert.showAndWait();
-				}
-			}
+			// @Override
+			// public void nameSearchClicked()
+			// {
+			// studentModel = null;
+			//
+			// if (studentBag.isStudentValid(name))
+			// {
+			// // Get valid student
+			// studentModel = studentBag.getValidStudent();
+			//
+			// } else
+			// {
+			// alert = new Alert(AlertType.ERROR);
+			// alert.setTitle("Error");
+			// alert.setHeaderText("Entered name is invalid");
+			// alert.setContentText("Please enter a valid name");
+			// alert.showAndWait();
+			// }
+			// }
 			
 			@Override
-			public void updateNameClicked()
+			public String updateNameClicked()
 			{
+				
 				editingDialog = new TextInputDialog(studentModel.getName());
-				editingDialog.setTitle("Edit Student");
-				editingDialog.setHeaderText("Enter new name of student");
+				editingDialog.setTitle("Edit Name");
+				editingDialog.setHeaderText(null);
 				editingDialog.setContentText("Name: ");
 				Optional<String> result = editingDialog.showAndWait();
-				result.ifPresent(e ->
+				
+				if (result.isPresent())
 				{
-					if (!result.equals(studentModel.getName()))
+					if (!result.get().equals(studentModel.getName()))
 					{
-						studentModel.setName(result.toString());
+						return result.get();
 					} else
 					{
 						alert = new Alert(AlertType.CONFIRMATION);
@@ -138,12 +142,14 @@ public class SAINeditViewController
 							alert.close();
 						}
 					}
-				});
+				}
+				return null;
 			}
 			
 			@Override
 			public void updateMajorClicked()
 			{
+				
 				choiceDialog = new ChoiceDialog(studentModel.getMajor().getTitle(), majorBag.getMajorStringList());
 				choiceDialog.setTitle("Edit Major");
 				choiceDialog.setHeaderText("Choose new major for student");
@@ -175,24 +181,25 @@ public class SAINeditViewController
 			}
 			
 			@Override
-			public void updateUserNameClicked()
+			public String updateUserNameClicked()
 			{
 				editingDialog = new TextInputDialog(studentModel.getUserName());
-				editingDialog.setTitle("Edit Student");
-				editingDialog.setHeaderText("Enter new user name of student");
-				editingDialog.setContentText("User Name: ");
+				editingDialog.setTitle("Edit Username");
+				editingDialog.setHeaderText(null);
+				editingDialog.setContentText("Username: ");
 				Optional<String> result = editingDialog.showAndWait();
-				result.ifPresent(e ->
+				
+				if (result.isPresent())
 				{
-					if (!result.equals(studentModel.getUserName()))
+					if (!result.get().equals(studentModel.getUserName()))
 					{
-						studentModel.setUserName(result.toString());
+						return result.get();
 					} else
 					{
 						alert = new Alert(AlertType.CONFIRMATION);
-						alert.setTitle("User name error");
+						alert.setTitle("Username error");
 						alert.setHeaderText(null);
-						alert.setContentText("User name is unchanged. Are you sure?");
+						alert.setContentText("Username is unchanged. Are you sure?");
 						Optional<ButtonType> resultTwo = alert.showAndWait();
 						if (resultTwo.get() == ButtonType.OK)
 						{
@@ -203,22 +210,25 @@ public class SAINeditViewController
 							alert.close();
 						}
 					}
-				});
+				}
+				return null;
+				
 			}
 			
 			@Override
-			public void updatePasswordClicked()
+			public String updatePasswordClicked()
 			{
 				editingDialog = new TextInputDialog(studentModel.getPassword());
-				editingDialog.setTitle("Edit Student");
-				editingDialog.setHeaderText("Enter new password of student");
+				editingDialog.setTitle("Edit Password");
+				editingDialog.setHeaderText(null);
 				editingDialog.setContentText("Password: ");
 				Optional<String> result = editingDialog.showAndWait();
-				result.ifPresent(e ->
+				
+				if (result.isPresent())
 				{
-					if (!result.equals(studentModel.getPassword()))
+					if (!result.get().equals(studentModel.getPassword()))
 					{
-						studentModel.setPassword(result.toString());
+						return result.get();
 					} else
 					{
 						alert = new Alert(AlertType.CONFIRMATION);
@@ -235,26 +245,28 @@ public class SAINeditViewController
 							alert.close();
 						}
 					}
-				});
+				}
+				return null;
 			}
 			
 			@Override
-			public void updateGpaClicked()
+			public double updateGpaClicked()
 			{
-				editingDialog = new TextInputDialog(studentModel.getName());
+				editingDialog = new TextInputDialog(Double.toString(studentModel.getGpa()));
 				editingDialog.setTitle("Edit Student");
 				editingDialog.setHeaderText("Enter new GPA of student");
 				editingDialog.setContentText("GPA: ");
 				Optional<String> result = editingDialog.showAndWait();
-				result.ifPresent(e ->
+				
+				if (result.isPresent())
 				{
 					try
 					{
-						double tempDouble = Double.parseDouble(result.toString());
+						double tempGpa = Double.parseDouble(result.toString());
 						
-						if (tempDouble != studentModel.getGpa())
+						if (tempGpa != studentModel.getGpa())
 						{
-							studentModel.setGpa(tempDouble);
+							return tempGpa;
 						} else
 						{
 							alert = new Alert(AlertType.CONFIRMATION);
@@ -280,8 +292,8 @@ public class SAINeditViewController
 						alert.showAndWait();
 						updateGpaClicked();
 					}
-					
-				});
+				}
+				return 0;
 			}
 			
 			@Override
@@ -328,4 +340,10 @@ public class SAINeditViewController
 		// Return student model
 		return studentModel;
 	}
+	
+	public MajorBag getMajorBag()
+	{
+		return majorBag;
+	}
+	
 }

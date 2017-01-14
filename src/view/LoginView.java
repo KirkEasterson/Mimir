@@ -7,10 +7,12 @@ package view;
 
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
@@ -23,23 +25,27 @@ public class LoginView
 	private HBox				panePassword;		// Password HBox
 	private Label				lblPassword;		// Password label
 	private PasswordField		txtFldPassword;		// Password text field
+	private HBox				paneButtons;		// Button HBox
 	private Button				btnLogin;			// Login button
+	private Button				btnExit;			// Exit button
 	// private Hyperlink hplinkProblems;
 	
 	private VBox				pane;				// VBox for everything
 	private LoginViewListener	loginViewListener;	// Listener
 	private Stage				stage;				// Stage
-								
+	
+	private Alert				alert;				// Alert dialog
+	
 	private String				userName;			// Username string
 	private String				password;			// Password string
-								
+	
 	// Constructor
 	public LoginView(Stage stage)
 	{
 		// Set stage to argument stage
 		this.stage = stage;
 		// Set title
-		stage.setTitle("Login");
+		stage.setTitle("SBU Solar Login");
 		
 		// Initialize hbox for username
 		paneUserName = new HBox(20);
@@ -74,13 +80,26 @@ public class LoginView
 		// Login button event handler
 		btnLogin.setOnAction(e ->
 		{
-			// Get username from text field
-			userName = txtFldUserName.getText();
-			// Get password form text field
-			password = txtFldPassword.getText();
+			// Input validation
+			if ((txtFldUserName.getText().equals("")) || (txtFldPassword.getText().equals("")))
+			{
+				alert = new Alert(AlertType.ERROR);
+				alert.setTitle("Invalid Credentials");
+				alert.setHeaderText(null);
+				alert.setContentText("Fields cannot be empty.");
+				alert.showAndWait();
+				return;
+			} else
+			{
+				// Get username from text field
+				userName = txtFldUserName.getText();
+				// Get password form text field
+				password = txtFldPassword.getText();
+			}
 			
 			// Create new loginView event
 			LoginViewEvent ev = new LoginViewEvent(this, userName, password);
+			
 			// If listener isn't null
 			if (loginViewListener != null)
 			{
@@ -88,27 +107,34 @@ public class LoginView
 				loginViewListener.loginButtonClicked(ev);
 			}
 			
-			//			SAINviewController sainViewController = new SAINviewController(loginViewController.getStudentModel(),
-			//					loginViewController.getStudentModel().getMajor());
-			//			stage.setScene(SAINview());
-			//			stage.show();
-			
+			txtFldUserName.setText(null);
+			txtFldPassword.setText(null);
 		});
 		
-		// hplinkProblems = new Hyperlink("Having trouble logging in?");
+		// Initialize exit button
+		btnExit = new Button("Exit");
+		// Exit button event handler
+		btnExit.setOnAction(e ->
+		{
+			// Close the window
+			stage.close();
+		});
+		
+		// Initialize button pane
+		paneButtons = new HBox(10);
+		paneButtons.getChildren().addAll(btnLogin, btnExit);
 		
 		// Initialize parent pane
 		pane = new VBox(10);
 		// Set padding of parent pane
 		pane.setPadding(new Insets(10, 10, 10, 10));
 		// Add everything to the parent pane
-		pane.getChildren().addAll(paneUserName, panePassword, btnLogin);
+		pane.getChildren().addAll(paneUserName, panePassword, paneButtons);
 		
 		// Set the stage
-		stage.setScene(new Scene(pane, 265, 150));
+		stage.setScene(new Scene(pane, 260, 120));
 		// Show the stage
 		stage.show();
-		
 	}
 	
 	// Set listener method

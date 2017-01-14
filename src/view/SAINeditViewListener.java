@@ -9,17 +9,15 @@ import java.util.EventListener;
 
 public interface SAINeditViewListener extends EventListener
 {
-	public void nameSearchClicked();
-	
-	public void updateNameClicked();
+	public String updateNameClicked();
 	
 	public void updateMajorClicked();
 	
-	public void updateUserNameClicked();
+	public String updateUserNameClicked();
 	
-	public void updatePasswordClicked();
+	public String updatePasswordClicked();
 	
-	public void updateGpaClicked();
+	public double updateGpaClicked();
 	
 	public void updateCoursesTookClicked();
 	

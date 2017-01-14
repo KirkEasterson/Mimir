@@ -1,3 +1,4 @@
+
 package view;
 
 import javafx.geometry.Insets;
@@ -16,18 +17,18 @@ public class StaffSearchView
 {
 	private Staff					staffModel;
 	private StudentBag				studentBag;
-									
-	private Alert					alert;
-									
+	
+	// private Alert alert;
+	
 	private HBox					namePane;
 	private Label					directionsLabel;
 	private TextField				inputTextField;
-									
+	
 	private Button					searchButton;
 	private VBox					pane;
-									
+	
 	private StaffSearchViewListener	staffSearchViewListener;
-									
+	
 	public StaffSearchView(Stage stage)
 	{
 		stage.setTitle("Student Search");
@@ -40,7 +41,7 @@ public class StaffSearchView
 		searchButton = new Button("Search");
 		searchButton.setOnAction(e ->
 		{
-		
+			
 		});
 		
 		pane = new VBox(10);

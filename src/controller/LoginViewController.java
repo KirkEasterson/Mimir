@@ -31,36 +31,27 @@ public class LoginViewController
 {
 	private StudentBag		studentBag;			// Bag for students
 	private StaffBag		staffBag;			// Bag for staff
-	private MajorBag		majorBag;
-	private CourseBag		courseBag;
-							
+	private MajorBag		majorBag;			// Bag for majors
+	private CourseBag		courseBag;			// Bag for courses
+	
 	private String			userName;			// Username
 	private String			password;			// Password
-							
+	
 	private Student			studentModel;		// Model of student
 	private Staff			staffModel;			// Model of staff
-							
+	
 	private Alert			alert;				// Alert for validation
-	private ButtonType		sainButton;
-	private ButtonType		whatIfButton;
-	private ButtonType		logoutButton;
-	private ButtonType		viewButton;
-	private ButtonType		editButton;
-							
+	private ButtonType		sainButton;			// SAIN display button
+	private ButtonType		whatIfButton;		// What-if-analysis button
+	private ButtonType		logoutButton;		// Logout button
+	private ButtonType		viewButton;			// Button to view student
+	private ButtonType		editButton;			// Button to edit student
+	
 	private TextInputDialog	dialog;
 	private TextInputDialog	staffChoiceDialog;
-							
-	// private StudentChooseView studentChooseView;
-	// private StudentChooseViewController studentChooseViewController;
-	//
-	// private TESTwhatIfView whatIfView;
-	// private TESTwhatIfViewController whatIfViewController;
-	//
-	// private StaffSearchView staffSearchView;
-	// private StaffSearchViewController staffSearchViewController;
 	
 	private Stage			stage;				// The stage
-							
+	
 	public LoginViewController(LoginView window, StudentBag studentBag, StaffBag staffBag, MajorBag majorBag,
 			CourseBag courseBag)
 	{
@@ -70,6 +61,7 @@ public class LoginViewController
 		this.staffBag = staffBag;
 		// Set majorBag to argument majorBag
 		this.majorBag = majorBag;
+		// Set courseBag to argument courseBag
 		this.courseBag = courseBag;
 		
 		// Instantiate windowListener
@@ -106,8 +98,10 @@ public class LoginViewController
 					alert = new Alert(AlertType.ERROR);
 					// Set title for error
 					alert.setTitle("ERROR");
-					// Set header text for error
-					alert.setHeaderText("Incorrect username/password");
+					// Set header text to null
+					alert.setHeaderText(null);
+					// Set content text for error
+					alert.setContentText("Incorrect username/password");
 					// Show error
 					alert.showAndWait();
 				}
@@ -123,19 +117,21 @@ public class LoginViewController
 		alert.setContentText("Choose an option");
 		sainButton = new ButtonType("SAIN Report");
 		whatIfButton = new ButtonType("What If Analysis");
-		logoutButton = new ButtonType("Log Out", ButtonData.CANCEL_CLOSE);
+		logoutButton = new ButtonType("Log Out");
 		alert.getButtonTypes().setAll(sainButton, whatIfButton, logoutButton);
 		Optional<ButtonType> result = alert.showAndWait();
 		
 		if (result.get() == sainButton)
 		{
+			// Display SAIN report
 			onStudentChoiceSainReport();
 		} else if (result.get() == whatIfButton)
 		{
-			// GENERATE WHAT IF ANALYSIS
+			// Generate What-If-Analysis
 			onStudentChoiceWhatIfAnalysis();
 		} else
 		{
+			// Log out the student
 			alert.close();
 		}
 	}
@@ -153,11 +149,11 @@ public class LoginViewController
 		
 		ChoiceDialog<String> choiceDialog = new ChoiceDialog<>("Major", majorBag.getMajorStringList());
 		choiceDialog.setTitle("What If Analysis");
-		choiceDialog.setHeaderText("Choose the major for the What If Analysis");
+		choiceDialog.setHeaderText("Choose the major for the What-If-Analysis");
 		choiceDialog.setContentText("Major:");
-		Optional<String> resultTwo;
-		resultTwo = choiceDialog.showAndWait();
-		resultTwo.ifPresent(majorChoice ->
+		Optional<String> resultWhatIf;
+		resultWhatIf = choiceDialog.showAndWait();
+		resultWhatIf.ifPresent(majorChoice ->
 		{
 			Major tempMajor = majorBag.findByString(majorChoice);
 			if ((!tempMajor.getTitle().equals(studentModel.getMajor().getTitle())))
@@ -211,26 +207,30 @@ public class LoginViewController
 	{
 		// NEW DIALOG
 		alert = new Alert(AlertType.CONFIRMATION);
-		alert.setTitle("MySCCC(Faculty)");
+		alert.setTitle("SBU Solar (Faculty)");
 		alert.setHeaderText(null);
 		alert.setContentText("Choose an option");
 		viewButton = new ButtonType("View Student");
 		editButton = new ButtonType("Edit Student");
-		logoutButton = new ButtonType("Logout", ButtonData.CANCEL_CLOSE);
+		logoutButton = new ButtonType("Logout");
 		alert.getButtonTypes().setAll(viewButton, editButton, logoutButton);
 		Optional<ButtonType> resultTwo = alert.showAndWait();
 		
 		if (resultTwo.get() == viewButton)
 		{
-			SAINviewController sainViewController = new SAINviewController(student, student.getMajor());
 			// Instantiate new SAINviewController
+			SAINviewController sainViewController = new SAINviewController(student, student.getMajor());
+			// Instantiate new SAINview
 			SAINview sainView = new SAINview(stage, sainViewController);
 			onValidStudentSearch(student);
 		} else if (resultTwo.get() == editButton)
 		{
-			SAINeditView sainEditView = new SAINeditView(stage);
-//			SAINeditViewController sainEditViewcontroller = new SAINeditViewController(sainEditView, student, majorBag,
-//					courseBag);
+			
+			SAINeditViewController sainEditViewController = new SAINeditViewController(stage, student, majorBag,
+					courseBag);
+			
+			// SAINeditView sainEditView = new SAINeditView(stage, sainEditViewController);
+			
 		} else
 		{
 			alert.close();

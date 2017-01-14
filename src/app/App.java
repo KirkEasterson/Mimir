@@ -1,11 +1,7 @@
-////////////////////
-// Kirk Easterson //
-// CST 242 Final ///
-////////////////////
 
 package app;
 
-import controller.SAINeditViewController;
+import controller.LoginViewController;
 import javafx.application.Application;
 import javafx.stage.Stage;
 import model.Course;
@@ -16,10 +12,27 @@ import model.Staff;
 import model.StaffBag;
 import model.Student;
 import model.StudentBag;
-import view.SAINeditView;
+import view.LoginView;
+
+/**
+ * The application object. It creates an instance of the SAIN report program.
+ * This is a replica of my school's student records.
+ * 
+ * @author Kirk Easterson
+ * @version 1.0
+ *
+ */
 
 public class App extends Application
 {
+	
+	/**
+	 * The main method where the SAIN report is launched.
+	 * 
+	 * 
+	 * @param args
+	 *        The string array of arguments
+	 */
 	
 	public static void main(String[] args)
 	{
@@ -27,6 +40,9 @@ public class App extends Application
 		launch(args);
 	}
 	
+	/**
+	 * The starting method. It is where the model, view, and controller are created.
+	 */
 	@Override
 	public void start(Stage stage) throws Exception
 	{
@@ -277,15 +293,17 @@ public class App extends Application
 		// VIEW /////////////////////////////////////////////////
 		
 		// MIGHT ADD A LOGIN DIALOG
-		// LoginView loginView = new LoginView(stage);
-		// LoginViewController loginController = new LoginViewController(loginView, studentBag, staffBag, majorBag,
-		// courseBag);
+		LoginView loginView = new LoginView(stage);
+		LoginViewController loginController = new LoginViewController(loginView, studentBag, staffBag, majorBag,
+				courseBag);
+		
+		// TEST OBJECTS
 		
 		// Controller controller = new Controller(studentBag, staffBag,
 		// loginView);
 		
-		SAINeditView test = new SAINeditView(stage);
-		SAINeditViewController testController = new SAINeditViewController(test, studentBag, majorBag, courseBag);
+		// SAINeditView test = new SAINeditView(stage);
+		// SAINeditViewController testController = new SAINeditViewController(test, studentBag, majorBag, courseBag);
 		
 		// SearchView test = new SearchView(stage);
 		

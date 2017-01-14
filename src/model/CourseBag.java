@@ -27,11 +27,11 @@ public class CourseBag
 	
 	public Course findByString(String courseName)
 	{
-		for (Course temp : courseList)
+		for (Course tempCourse : courseList)
 		{
-			if (temp.getCourseTitle().equals(courseName))
+			if (tempCourse.getCourseTitle().equals(courseName))
 			{
-				return temp;
+				return tempCourse;
 			}
 		}
 		return null;
